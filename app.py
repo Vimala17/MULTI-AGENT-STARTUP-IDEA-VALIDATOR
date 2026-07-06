@@ -17,11 +17,6 @@ client = MongoClient(MONGO_URI)
 db = client["startupsense_db"]
 history_collection = db["analyses"]
 
-def json_serializable(obj):
-    if isinstance(obj, ObjectId):
-        return str(obj)
-    raise TypeError(f"Type {type(obj)} not serializable")
-
 def call_groq_agent(system_prompt, user_prompt):
     if not GROQ_API_KEY:
         return {"error": "API Key missing"}
@@ -42,14 +37,7 @@ def call_groq_agent(system_prompt, user_prompt):
     }
 
     try:
-        response = requests.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers=headers,
-            json=payload,
-            timeout=60
-        )
-        if response.status_code != 200:
-            return {"error": f"API Error {response.status_code}"}
+        response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload, timeout=60)
         res_json = response.json()
         content = res_json["choices"][0]["message"]["content"]
         return json.loads(content)
@@ -68,57 +56,58 @@ def analyze_idea():
     if not idea:
         return jsonify({"error": "Idea text is required"}), 400
 
+    # 1. Market Research Agent
+    market_system = '''You are a Market Research expert. Return ONLY this JSON format with no markdown:
+{"market_size": "estimated market size", "demand": "market demand level", "opportunity": "key opportunity", "target_market": "target customer segment", "growth_potential": "growth outlook", "key_insights": ["insight1", "insight2"]}'''
+    market_res = call_groq_agent(
+        market_system,
+        f"Analyze market demand for this startup idea: {idea}"
+    )
+
+    # 2. Competitor Agent
+    comp_system = '''You are a Competitor Analysis expert. Return ONLY this JSON format with no markdown:
+{"main_competitors": "main competitors", "competition_level": "high/medium/low", "competitive_advantage": "key advantage", "differentiation": "how to differentiate", "market_gaps": "unmet needs", "threats": ["threat1", "threat2"]}'''
+    comp_res = call_groq_agent(
+        comp_system,
+        f"Analyze competition for this idea: {idea}"
+    )
+
+    # 3. Risk & Revenue Agent
+    risk_system = '''You are a Risk & Revenue VC expert. Return ONLY this JSON format with no markdown:
+{"revenue_potential": "revenue model and potential", "main_risks": "primary risks", "risk_level": "high/medium/low", "mitigation": "mitigation strategies", "funding_needs": "funding requirements", "break_even_timeline": "timeline", "roi_projection": "ROI outlook"}'''
+    risk_res = call_groq_agent(
+        risk_system,
+        f"Analyze risks and revenue potential for this idea: {idea}"
+    )
+
+    # 4. Judge Agent (Final Decision)
     judge_system = """
-You are a **strict and critical VC analyst**. Do not give high scores easily. Be realistic and honest.
-
-Return ONLY valid JSON in this exact format:
-
+You are the final VC Judge. Return ONLY this JSON:
 {
-  "overall_score": number (40-88),
+  "overall_score": number (50-88),
   "decision": "Strong Idea / Moderate Idea / Weak Idea",
-  "elevator_pitch": "short powerful one line pitch",
-  "investor_readiness_score": number (0-100),
-  "risk_score": number (0-100),
-  "innovation_score": number (0-100),
-  "market_score": number (0-100),
-  "business_score": number (0-100),
-  "technology_score": number (0-100),
-  "execution_score": number (0-100),
+  "elevator_pitch": "short powerful pitch",
+  "investor_readiness_score": number,
   "swot": {
-    "strengths": ["point1", "point2"],
-    "weaknesses": ["point1", "point2"],
-    "opportunities": ["point1", "point2"],
-    "threats": ["point1", "point2"]
+    "strengths": ["..."],
+    "weaknesses": ["..."],
+    "opportunities": ["..."],
+    "threats": ["..."]
   }
 }
 """
-
-    judge_res = call_groq_agent(judge_system, f"Give honest and critical analysis for this startup idea: {idea}")
+    judge_res = call_groq_agent(judge_system, f"Idea: {idea}\nMarket: {json.dumps(market_res)}\nCompetitors: {json.dumps(comp_res)}\nRisk: {json.dumps(risk_res)}")
 
     final_report = {
         "idea": idea,
-        "judge_evaluation": {
-            "overall_score": judge_res.get("overall_score", 55),
-            "decision": judge_res.get("decision", "Moderate Idea"),
-            "elevator_pitch": judge_res.get("elevator_pitch", "Needs significant improvement."),
-            "investor_readiness_score": judge_res.get("investor_readiness_score", 50),
-            "risk_score": judge_res.get("risk_score", 45),
-            "innovation_score": judge_res.get("innovation_score", 60),
-            "market_score": judge_res.get("market_score", 55),
-            "business_score": judge_res.get("business_score", 50),
-            "technology_score": judge_res.get("technology_score", 65),
-            "execution_score": judge_res.get("execution_score", 45),
-            "swot": judge_res.get("swot", {
-                "strengths": ["Interesting concept"],
-                "weaknesses": ["High execution risk"],
-                "opportunities": ["Market potential"],
-                "threats": ["Strong competition"]
-            })
-        }
+        "market_research": market_res,
+        "competitor_analysis": comp_res,
+        "risk_revenue": risk_res,
+        "judge_evaluation": judge_res
     }
 
     try:
-        doc = json.loads(json.dumps(final_report, default=json_serializable))
+        doc = json.loads(json.dumps(final_report, default=str))
         result = history_collection.insert_one(doc)
         final_report["id"] = str(result.inserted_id)
     except Exception as e:
@@ -128,13 +117,10 @@ Return ONLY valid JSON in this exact format:
 
 @app.route("/api/history", methods=["GET"])
 def get_history():
-    try:
-        items = list(history_collection.find().sort("_id", -1).limit(5))
-        for doc in items:
-            doc["_id"] = str(doc["_id"])
-        return jsonify(items)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    items = list(history_collection.find().sort("_id", -1).limit(10))
+    for r in items:
+        r["_id"] = str(r["_id"])
+    return jsonify(items)
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

@@ -1,423 +1,647 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StartupSense AI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <script>
-    tailwind.config = { darkMode: 'class' }
-  </script>
-  <script>
-    (function () {
-      const saved = localStorage.getItem('theme');
-      if (saved === 'dark') document.documentElement.classList.add('dark');
-      else document.documentElement.classList.remove('dark');
-    })();
-  </script>
-  <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .gradient-btn {
-      background: linear-gradient(90deg, #10b981, #06b6d4, #8b5cf6, #10b981);
-      background-size: 300% 300%;
-      animation: gradientMove 6s ease infinite;
-    }
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    .nav-active {
-      background: rgba(16, 185, 129, 0.12);
-      color: #10b981;
-      border: 1px solid rgba(16, 185, 129, 0.25);
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StartupSense AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<script>
+  tailwind.config = { darkMode: 'class' }
+</script>
+<script>
+  (function () {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  })();
+</script>
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .gradient-btn {
+    background: linear-gradient(90deg, #10b981, #06b6d4, #8b5cf6, #10b981);
+    background-size: 300% 300%;
+    animation: gradientMove 6s ease infinite;
+  }
+  @keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .nav-active {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+  .agent-card {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.85));
+    backdrop-filter: blur(8px);
+  }
+  .dark .agent-card {
+    background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(2,6,23,0.9));
+  }
+  .agent-status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: #10b981;
+    animation: pulseDot 1s infinite;
+  }
+  .agent-dots span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: #10b981;
+    animation: bounceDot 1s infinite ease-in-out;
+    margin-right: 2px;
+  }
+  .agent-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .agent-dots span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pulseDot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+  }
+  @keyframes bounceDot {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.6; }
+    40% { transform: translateY(-4px); opacity: 1; }
+  }
+</style>
 </head>
 <body class="min-h-screen transition-colors duration-300 bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-gray-100">
-  <div class="min-h-screen flex flex-col lg:flex-row">
-    <aside class="w-full lg:w-72 border-r border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-4 lg:p-6 lg:sticky lg:top-0 lg:h-screen">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-lg shadow-lg">🚀</div>
-        <div>
-          <h1 class="text-lg font-bold">Multi Agent Startup AI</h1>
+<div class="min-h-screen flex flex-col lg:flex-row">
+  <aside class="w-full lg:w-72 border-r border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-4 lg:p-6 lg:sticky lg:top-0 lg:h-screen">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-lg shadow-lg">🚀</div>
+      <div>
+        <h1 class="text-lg font-bold">Multi Agent Startup AI</h1>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-1 gap-2">
+      <button class="nav-btn nav-active flex items-center gap-3 px-4 py-3 rounded-2xl transition text-sm" data-target="dashboardPanel">
+        <i class="fa-solid fa-gauge-high w-5"></i> Dashboard
+      </button>
+      <button class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 transition text-sm" data-target="agentsPanel">
+        <i class="fa-solid fa-users-rays w-5"></i> Agents
+      </button>
+      <button class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 transition text-sm" data-target="historyPanel">
+        <i class="fa-solid fa-clock-rotate-left w-5"></i> History
+      </button>
+      <button class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 transition text-sm" data-target="settingsPanel">
+        <i class="fa-solid fa-gear w-5"></i> Settings
+      </button>
+    </div>
+  </aside>
+
+  <main class="flex-1 px-5 sm:px-6 md:px-8 py-6 md:py-10">
+    <section class="text-center mb-8 md:mb-12">
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 text-xs md:text-sm font-medium">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Startup Analysis Engine
+      </span>
+      <h2 class="text-3xl md:text-5xl font-black mt-5 tracking-tight">Startup validation dashboard</h2>
+      <p class="text-emerald-600 dark:text-emerald-300 text-sm md:text-lg mt-4">Risk, investor readiness, market, execution, and SWOT analysis.</p>
+    </section>
+
+    <section id="dashboardPanel" class="panel grid grid-cols-1 2xl:grid-cols-12 gap-8 items-start">
+      <div class="2xl:col-span-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
+          <h3 class="text-lg font-semibold mb-2">Idea Input</h3>
+          <textarea id="ideaInput" rows="10" class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-emerald-500/20 focus:border-emerald-400 rounded-2xl p-4 text-sm md:text-base resize-none focus:outline-none text-slate-900 dark:text-gray-100 placeholder-gray-500" placeholder="Example: An AI platform for college students..."></textarea>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+            <button onclick="fillExample()" class="gradient-btn rounded-2xl py-3 font-semibold text-white text-sm">Example</button>
+            <button onclick="analyzeIdea()" class="gradient-btn rounded-2xl py-3 font-semibold text-white text-sm">Analyze</button>
+          </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 lg:grid-cols-1 gap-2">
-        <button class="nav-btn nav-active flex items-center gap-3 px-4 py-3 rounded-2xl transition text-sm" data-target="dashboardPanel">
-          <i class="fa-solid fa-gauge-high w-5"></i> Dashboard
-        </button>
-        <button class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 transition text-sm" data-target="analysisPanel">
-          <i class="fa-solid fa-chart-line w-5"></i> Analysis
-        </button>
-        <button class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 transition text-sm" data-target="historyPanel">
-          <i class="fa-solid fa-clock-rotate-left w-5"></i> History
-        </button>
-        <button class="nav-btn flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/5 transition text-sm" data-target="settingsPanel">
-          <i class="fa-solid fa-gear w-5"></i> Settings
-        </button>
+      <div class="2xl:col-span-5 space-y-6">
+        <div id="resultArea" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
+          <div class="text-center py-14 text-slate-500 dark:text-gray-400">
+            <i class="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-500 dark:text-emerald-400"></i>
+            <p class="mt-4 text-sm">Analysis will appear here.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-4 shadow-xl">
+            <p class="text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">Score</p>
+            <div class="mt-2 text-2xl font-bold text-emerald-500 dark:text-emerald-400" id="scoreBox">--</div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-4 shadow-xl">
+            <p class="text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">Investor Readiness</p>
+            <div class="mt-2 text-2xl font-bold text-cyan-500 dark:text-cyan-400" id="readinessBox">--</div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-4 shadow-xl">
+            <p class="text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">Decision</p>
+            <div class="mt-2 text-sm font-semibold text-slate-900 dark:text-white" id="decisionBox">--</div>
+          </div>
+        </div>
       </div>
-    </aside>
 
-    <main class="flex-1 px-5 sm:px-6 md:px-8 py-6 md:py-10">
-      <section class="text-center mb-8 md:mb-12">
-        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 text-xs md:text-sm font-medium">
-          <i class="fa-solid fa-wand-magic-sparkles"></i> Startup Analysis Engine
-        </span>
-        <h2 class="text-3xl md:text-5xl font-black mt-5 tracking-tight">Startup validation dashboard</h2>
-        <p class="text-emerald-600 dark:text-emerald-300 text-sm md:text-lg mt-4">Risk, investor readiness, market, execution, and SWOT analysis.</p>
-      </section>
+      <div class="2xl:col-span-3 space-y-6">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-5 shadow-xl">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold">Recent Analysis</h3>
+            <button onclick="loadHistory()" class="text-xs text-emerald-600 dark:text-emerald-300">Refresh</button>
+          </div>
+          <div id="historyList" class="mt-4 space-y-3 text-xs text-slate-600 dark:text-gray-300">
+            <div class="text-slate-400 dark:text-gray-500">No recent analysis found.</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      <section id="dashboardPanel" class="panel grid grid-cols-1 2xl:grid-cols-12 gap-8 items-start">
-        <div class="2xl:col-span-4">
-          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
-            <h3 class="text-lg font-semibold mb-2">Idea Input</h3>
-            <textarea id="ideaInput" rows="10" class="w-full bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-emerald-500/20 focus:border-emerald-400 rounded-2xl p-4 text-sm md:text-base resize-none focus:outline-none text-slate-900 dark:text-gray-100 placeholder-gray-500" placeholder="Example: An AI platform for college students..."></textarea>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-              <button onclick="fillExample()" class="gradient-btn rounded-2xl py-3 font-semibold text-white text-sm">Example</button>
-              <button onclick="analyzeIdea()" class="gradient-btn rounded-2xl py-3 font-semibold text-white text-sm">Analyze</button>
+    <section id="agentsPanel" class="panel hidden mt-8">
+      <div class="space-y-6">
+        <!-- Agent Working Status -->
+        <div id="agentWorkingStatus" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div class="agent-card rounded-3xl p-4 shadow-sm">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center text-sm">📈</div>
+              <div>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">Market</p>
+                <p class="text-xs text-slate-500 dark:text-gray-400 flex items-center gap-1 mt-1"><span class="agent-dots flex items-center"><span></span><span></span><span></span></span></p>
+              </div>
+            </div>
+          </div>
+          <div class="agent-card rounded-3xl p-4 shadow-sm">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center text-sm">🧠</div>
+              <div>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">Competitor</p>
+                <p class="text-xs text-slate-500 dark:text-gray-400 flex items-center gap-1 mt-1"><span class="agent-dots flex items-center"><span></span><span></span><span></span></span></p>
+              </div>
+            </div>
+          </div>
+          <div class="agent-card rounded-3xl p-4 shadow-sm">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center text-sm">⚠️</div>
+              <div>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">Risk & Revenue</p>
+                <p class="text-xs text-slate-500 dark:text-gray-400 flex items-center gap-1 mt-1"><span class="agent-dots flex items-center"><span></span><span></span><span></span></span></p>
+              </div>
+            </div>
+          </div>
+          <div class="agent-card rounded-3xl p-4 shadow-sm">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center text-sm">🏁</div>
+              <div>
+                <p class="text-sm font-semibold text-slate-900 dark:text-white">Judge</p>
+                <p class="text-xs text-slate-500 dark:text-gray-400 flex items-center gap-1 mt-1"><span class="agent-dots flex items-center"><span></span><span></span><span></span></span></p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="2xl:col-span-5 space-y-6">
-          <div id="resultArea" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
-            <div class="text-center py-14 text-slate-500 dark:text-gray-400">
-              <i class="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-500 dark:text-emerald-400"></i>
-              <p class="mt-4 text-sm">Analysis will appear here.</p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Full Analysis Display (Hidden until complete) -->
+        <div id="agentsAnalysisDisplay" class="hidden space-y-6">
+          <!-- Scores Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-4 shadow-xl">
-              <p class="text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">Score</p>
-              <div class="mt-2 text-2xl font-bold text-emerald-500 dark:text-emerald-400" id="scoreBox">--</div>
+              <p class="text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">Overall Score</p>
+              <div class="mt-2 text-2xl font-bold text-emerald-500 dark:text-emerald-400" id="agentScoreBox">--</div>
             </div>
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-4 shadow-xl">
               <p class="text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">Investor Readiness</p>
-              <div class="mt-2 text-2xl font-bold text-cyan-500 dark:text-cyan-400" id="readinessBox">--</div>
+              <div class="mt-2 text-2xl font-bold text-cyan-500 dark:text-cyan-400" id="agentReadinessBox">--</div>
             </div>
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-4 shadow-xl">
-              <p class="text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">Decision</p>
-              <div class="mt-2 text-sm font-semibold text-slate-900 dark:text-white" id="decisionBox">--</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="2xl:col-span-3 space-y-6">
-          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-5 shadow-xl">
-            <div class="flex items-center justify-between">
-              <h3 class="text-base font-semibold">Recent Analysis</h3>
-              <button onclick="loadHistory()" class="text-xs text-emerald-600 dark:text-emerald-300">Refresh</button>
-            </div>
-            <div id="historyList" class="mt-4 space-y-3 text-xs text-slate-600 dark:text-gray-300">
-              <div class="text-slate-400 dark:text-gray-500">No recent analysis found.</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="analysisPanel" class="panel hidden mt-8">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
-          <div class="flex items-center justify-between mb-5">
-            <div>
-              <h3 class="text-xl font-bold">Startup Performance Overview</h3>
-              <p class="text-sm text-slate-500 dark:text-gray-400">Metrics based on your analysis</p>
+              <p class="text-[11px] uppercase tracking-wider text-slate-500 dark:text-gray-400">Verdict</p>
+              <div class="mt-2 text-sm font-semibold text-slate-900 dark:text-white" id="agentDecisionBox">--</div>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-            <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
-              <div class="flex items-start justify-between">
-                <div>
-                  <p class="text-xs text-slate-500 dark:text-gray-400">💡 Innovation</p>
-                  <h4 class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Analysis score</h4>
-                  <p class="mt-2 text-2xl font-bold text-emerald-500 dark:text-emerald-400" id="innovationBox">--</p>
-                </div>
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-                  <i class="fa-solid fa-lightbulb"></i>
-                </div>
+          <!-- Risk, Investment, Tech Metrics -->
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
+            <h3 class="text-lg font-bold mb-4">Analysis Metrics</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-3">
+              <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
+                <p class="text-xs text-slate-500 dark:text-gray-400">💡 Innovation</p>
+                <p class="mt-2 text-xl font-bold text-emerald-500 dark:text-emerald-400" id="agentInnovationScore">--</p>
+                <div class="mt-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div id="agentInnovationBar" class="h-full w-0 bg-emerald-500 rounded-full transition-all duration-500"></div></div>
               </div>
-              <div class="mt-4 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                <div id="innovationBar" class="h-full w-0 bg-emerald-500 rounded-full transition-all duration-500"></div>
+              <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
+                <p class="text-xs text-slate-500 dark:text-gray-400">📈 Market</p>
+                <p class="mt-2 text-xl font-bold text-cyan-500 dark:text-cyan-400" id="agentMarketScore">--</p>
+                <div class="mt-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div id="agentMarketBar" class="h-full w-0 bg-cyan-500 rounded-full transition-all duration-500"></div></div>
               </div>
-            </div>
-
-            <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
-              <div class="flex items-start justify-between">
-                <div>
-                  <p class="text-xs text-slate-500 dark:text-gray-400">📈 Market</p>
-                  <h4 class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Analysis score</h4>
-                  <p class="mt-2 text-2xl font-bold text-cyan-500 dark:text-cyan-400" id="marketPerfBox">--</p>
-                </div>
-                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center">
-                  <i class="fa-solid fa-chart-line"></i>
-                </div>
+              <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
+                <p class="text-xs text-slate-500 dark:text-gray-400">💼 Business</p>
+                <p class="mt-2 text-xl font-bold text-violet-500 dark:text-violet-400" id="agentBusinessScore">--</p>
+                <div class="mt-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div id="agentBusinessBar" class="h-full w-0 bg-violet-500 rounded-full transition-all duration-500"></div></div>
               </div>
-              <div class="mt-4 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                <div id="marketBar" class="h-full w-0 bg-cyan-500 rounded-full transition-all duration-500"></div>
+              <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
+                <p class="text-xs text-slate-500 dark:text-gray-400">⚙ Technology</p>
+                <p class="mt-2 text-xl font-bold text-blue-500 dark:text-blue-400" id="agentTechnologyScore">--</p>
+                <div class="mt-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div id="agentTechnologyBar" class="h-full w-0 bg-blue-500 rounded-full transition-all duration-500"></div></div>
               </div>
-            </div>
-
-            <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
-              <div class="flex items-start justify-between">
-                <div>
-                  <p class="text-xs text-slate-500 dark:text-gray-400">💼 Business</p>
-                  <h4 class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Analysis score</h4>
-                  <p class="mt-2 text-2xl font-bold text-violet-500 dark:text-violet-400" id="businessBox">--</p>
-                </div>
-                <div class="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-500 flex items-center justify-center">
-                  <i class="fa-solid fa-briefcase"></i>
-                </div>
+              <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
+                <p class="text-xs text-slate-500 dark:text-gray-400">💰 Investment</p>
+                <p class="mt-2 text-xl font-bold text-amber-500 dark:text-amber-400" id="agentInvestmentScore">--</p>
+                <div class="mt-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div id="agentInvestmentBar" class="h-full w-0 bg-amber-500 rounded-full transition-all duration-500"></div></div>
               </div>
-              <div class="mt-4 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                <div id="businessBar" class="h-full w-0 bg-violet-500 rounded-full transition-all duration-500"></div>
-              </div>
-            </div>
-
-            <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
-              <div class="flex items-start justify-between">
-                <div>
-                  <p class="text-xs text-slate-500 dark:text-gray-400">⚙ Technology</p>
-                  <h4 class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Analysis score</h4>
-                  <p class="mt-2 text-2xl font-bold text-blue-500 dark:text-blue-400" id="technologyBox">--</p>
-                </div>
-                <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                  <i class="fa-solid fa-gears"></i>
-                </div>
-              </div>
-              <div class="mt-4 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                <div id="technologyBar" class="h-full w-0 bg-blue-500 rounded-full transition-all duration-500"></div>
-              </div>
-            </div>
-
-            <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
-              <div class="flex items-start justify-between">
-                <div>
-                  <p class="text-xs text-slate-500 dark:text-gray-400">💰 Investment</p>
-                  <h4 class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Analysis score</h4>
-                  <p class="mt-2 text-2xl font-bold text-amber-500 dark:text-amber-400" id="investmentBox">--</p>
-                </div>
-                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
-                  <i class="fa-solid fa-sack-dollar"></i>
-                </div>
-              </div>
-              <div class="mt-4 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                <div id="investmentBar" class="h-full w-0 bg-amber-500 rounded-full transition-all duration-500"></div>
-              </div>
-            </div>
-
-            <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
-              <div class="flex items-start justify-between">
-                <div>
-                  <p class="text-xs text-slate-500 dark:text-gray-400">🛡 Risk</p>
-                  <h4 class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Analysis risk</h4>
-                  <p class="mt-2 text-2xl font-bold text-red-500 dark:text-red-400" id="riskOverviewBox">--</p>
-                </div>
-                <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center">
-                  <i class="fa-solid fa-triangle-exclamation"></i>
-                </div>
-              </div>
-              <div class="mt-4 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                <div id="riskBar" class="h-full w-0 bg-red-500 rounded-full transition-all duration-500"></div>
+              <div class="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4">
+                <p class="text-xs text-slate-500 dark:text-gray-400">🛡 Risk</p>
+                <p class="mt-2 text-xl font-bold text-red-500 dark:text-red-400" id="agentRiskScore">--</p>
+                <div class="mt-2 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden"><div id="agentRiskBar" class="h-full w-0 bg-red-500 rounded-full transition-all duration-500"></div></div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section id="historyPanel" class="panel hidden mt-8">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
-          <h3 class="text-xl font-bold">History Panel</h3>
-          <div id="historyPanelList" class="mt-5 space-y-3 text-xs text-slate-600 dark:text-gray-300"></div>
-        </div>
-      </section>
-
-      <section id="settingsPanel" class="panel hidden mt-8">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
-          <h3 class="text-xl font-bold mb-4">Settings</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <button onclick="setTheme('dark')" class="rounded-2xl bg-slate-100 dark:bg-white/5 p-4 border border-slate-200 dark:border-white/10 text-left">
-              <div class="text-slate-500 dark:text-gray-400 text-xs mb-1">Theme</div>
-              <div class="font-semibold">Dark Mode</div>
-            </button>
-            <button onclick="setTheme('light')" class="rounded-2xl bg-slate-100 dark:bg-white/5 p-4 border border-slate-200 dark:border-white/10 text-left">
-              <div class="text-slate-500 dark:text-gray-400 text-xs mb-1">Theme</div>
-              <div class="font-semibold">Light Mode</div>
-            </button>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <script>
-    const navButtons = document.querySelectorAll('.nav-btn');
-    const panels = document.querySelectorAll('.panel');
-
-    function showPanel(targetId) {
-      panels.forEach(p => p.classList.add('hidden'));
-      document.getElementById(targetId).classList.remove('hidden');
-      navButtons.forEach(btn => btn.classList.remove('nav-active'));
-      document.querySelector(`[data-target="${targetId}"]`).classList.add('nav-active');
-    }
-
-    navButtons.forEach(btn => btn.addEventListener('click', () => showPanel(btn.dataset.target)));
-
-    function setTheme(theme) {
-      if (theme === 'dark') document.documentElement.classList.add('dark');
-      else document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', theme);
-    }
-
-    function fillExample() {
-      document.getElementById('ideaInput').value = 'An AI platform that helps college students create personalized study plans, track progress, and reduce exam stress.';
-    }
-
-    function riskLabel(value) {
-      if (value >= 70) return 'High';
-      if (value >= 40) return 'Medium';
-      return 'Low';
-    }
-
-    async function analyzeIdea() {
-      const idea = document.getElementById('ideaInput').value.trim();
-      if (!idea) return alert("Please enter your startup idea");
-
-      const resultDiv = document.getElementById('resultArea');
-      resultDiv.innerHTML = `<div class="text-center py-14 text-slate-500 dark:text-gray-400"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-500 dark:text-emerald-400"></i><p class="mt-4 text-sm">AI is analyzing your idea...</p></div>`;
-
-      try {
-        const res = await fetch('/api/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idea })
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-          resultDiv.innerHTML = `<p class="text-red-500 text-center py-8 text-sm">${data.error || 'Something went wrong.'}</p>`;
-          return;
-        }
-
-        const judge = data.judge_evaluation || {};
-        const innovation = Number(judge.innovation_score ?? 0);
-        const market = Number(judge.market_score ?? 0);
-        const business = Number(judge.business_score ?? 0);
-        const technology = Number(judge.technology_score ?? 0);
-        const investment = Number(judge.investor_readiness_score ?? 0);
-        const risk = Number(judge.risk_score ?? 0);
-
-        document.getElementById('scoreBox').innerText = judge.overall_score ?? '--';
-        document.getElementById('readinessBox').innerText = judge.investor_readiness_score ?? '--';
-        document.getElementById('decisionBox').innerText = judge.decision || '--';
-
-        document.getElementById('innovationBox').innerText = innovation ? innovation + '%' : '--';
-        document.getElementById('marketPerfBox').innerText = market ? market + '%' : '--';
-        document.getElementById('businessBox').innerText = business ? business + '%' : '--';
-        document.getElementById('technologyBox').innerText = technology ? technology + '%' : '--';
-        document.getElementById('investmentBox').innerText = investment ? investment + '%' : '--';
-        document.getElementById('riskOverviewBox').innerText = risk ? riskLabel(risk) : '--';
-
-        document.getElementById('innovationBar').style.width = innovation + '%';
-        document.getElementById('marketBar').style.width = market + '%';
-        document.getElementById('businessBar').style.width = business + '%';
-        document.getElementById('technologyBar').style.width = technology + '%';
-        document.getElementById('investmentBar').style.width = investment + '%';
-        document.getElementById('riskBar').style.width = risk + '%';
-
-        resultDiv.innerHTML = `
-          <div class="space-y-6">
-            <div class="flex flex-col md:flex-row justify-between gap-4">
-              <div class="max-w-3xl">
-                <span class="px-3 py-1 bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 rounded-full text-xs font-semibold inline-block">
-                  ${judge.decision || 'Analysis'}
-                </span>
-                <h3 class="text-xl md:text-2xl font-bold mt-3 leading-tight text-slate-900 dark:text-white">
-                  ${judge.elevator_pitch || "Strategic venture design analysis"}
-                </h3>
-              </div>
-              <div class="min-w-[120px] text-right">
-                <div class="text-4xl font-bold text-emerald-500 dark:text-emerald-400">${judge.overall_score ?? 0}</div>
-                <p class="text-slate-500 dark:text-gray-400 mt-1 text-xs">Overall Score</p>
-              </div>
-            </div>
-
+          <!-- SWOT Analysis -->
+          <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
+            <h3 class="text-lg font-bold mb-4">SWOT Analysis</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4">
                 <h4 class="text-emerald-600 dark:text-emerald-400 font-semibold mb-2 text-sm">Strengths</h4>
-                <ul class="space-y-1 text-xs text-slate-700 dark:text-gray-200">
-                  ${(judge.swot?.strengths || []).map(s => `<li class="pl-3 border-l-2 border-emerald-500">${s}</li>`).join('')}
-                </ul>
+                <ul id="agentStrengths" class="space-y-1 text-xs text-slate-700 dark:text-gray-200"></ul>
               </div>
               <div class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4">
                 <h4 class="text-red-600 dark:text-red-400 font-semibold mb-2 text-sm">Weaknesses</h4>
-                <ul class="space-y-1 text-xs text-slate-700 dark:text-gray-200">
-                  ${(judge.swot?.weaknesses || []).map(s => `<li class="pl-3 border-l-2 border-red-500">${s}</li>`).join('')}
-                </ul>
+                <ul id="agentWeaknesses" class="space-y-1 text-xs text-slate-700 dark:text-gray-200"></ul>
               </div>
               <div class="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4">
                 <h4 class="text-blue-600 dark:text-blue-400 font-semibold mb-2 text-sm">Opportunities</h4>
-                <ul class="space-y-1 text-xs text-slate-700 dark:text-gray-200">
-                  ${(judge.swot?.opportunities || []).map(s => `<li class="pl-3 border-l-2 border-blue-500">${s}</li>`).join('')}
-                </ul>
+                <ul id="agentOpportunities" class="space-y-1 text-xs text-slate-700 dark:text-gray-200"></ul>
               </div>
               <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-4">
                 <h4 class="text-yellow-600 dark:text-yellow-400 font-semibold mb-2 text-sm">Threats</h4>
-                <ul class="space-y-1 text-xs text-slate-700 dark:text-gray-200">
-                  ${(judge.swot?.threats || []).map(s => `<li class="pl-3 border-l-2 border-yellow-500">${s}</li>`).join('')}
-                </ul>
+                <ul id="agentThreats" class="space-y-1 text-xs text-slate-700 dark:text-gray-200"></ul>
               </div>
             </div>
           </div>
-        `;
 
-        loadHistory();
-        showPanel('dashboardPanel');
-      } catch (err) {
-        resultDiv.innerHTML = `<p class="text-red-500 text-center py-8 text-sm">Something went wrong. Please try again.</p>`;
+          <!-- Elevator Pitch -->
+          <div class="bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20 rounded-3xl p-6">
+            <h3 class="text-lg font-bold mb-2">Elevator Pitch</h3>
+            <p class="text-sm leading-6 text-slate-700 dark:text-gray-200" id="agentElevatorPitch">--</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="historyPanel" class="panel hidden mt-8">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
+        <h3 class="text-xl font-bold">History Panel</h3>
+        <div id="historyPanelList" class="mt-5 space-y-3 text-xs text-slate-600 dark:text-gray-300"></div>
+      </div>
+    </section>
+
+    <section id="settingsPanel" class="panel hidden mt-8">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-6 shadow-xl">
+        <h3 class="text-xl font-bold mb-4">Settings</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <button onclick="setTheme('dark')" class="rounded-2xl bg-slate-100 dark:bg-white/5 p-4 border border-slate-200 dark:border-white/10 text-left">
+            <div class="text-slate-500 dark:text-gray-400 text-xs mb-1">Theme</div>
+            <div class="font-semibold">Dark Mode</div>
+          </button>
+          <button onclick="setTheme('light')" class="rounded-2xl bg-slate-100 dark:bg-white/5 p-4 border border-slate-200 dark:border-white/10 text-left">
+            <div class="text-slate-500 dark:text-gray-400 text-xs mb-1">Theme</div>
+            <div class="font-semibold">Light Mode</div>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const navButtons = document.querySelectorAll('.nav-btn');
+  const panels = document.querySelectorAll('.panel');
+
+  function showPanel(targetId) {
+    panels.forEach(p => p.classList.add('hidden'));
+    document.getElementById(targetId).classList.remove('hidden');
+    navButtons.forEach(btn => btn.classList.remove('nav-active'));
+    document.querySelector(`[data-target="${targetId}"]`).classList.add('nav-active');
+  }
+
+  navButtons.forEach(btn => btn.addEventListener('click', () => showPanel(btn.dataset.target)));
+
+  function setTheme(theme) {
+    if (theme === 'dark') document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+    localStorage.setItem('theme', theme);
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+  }
+
+  function summarizePayload(payload, kind) {
+    if (!payload || typeof payload !== 'object') return 'Analyzing...';
+
+    // If payload has error, show it
+    if (payload.error) return `⚠️ ${payload.error}`;
+
+    // For Judge (final verdict)
+    if (kind === 'judge') {
+      const verdict = [];
+      if (payload.decision) verdict.push(`Decision: ${payload.decision}`);
+      if (payload.overall_score) verdict.push(`Score: ${payload.overall_score}/100`);
+      if (payload.investor_readiness_score) verdict.push(`Investor Ready: ${payload.investor_readiness_score}`);
+      if (payload.elevator_pitch) verdict.push(`Pitch: ${payload.elevator_pitch}`);
+      return verdict.join(' • ') || 'Judge analysis complete';
+    }
+
+    // For Market Agent
+    if (kind === 'market') {
+      const insights = [];
+      if (payload.market_size) insights.push(`Market: ${payload.market_size}`);
+      if (payload.demand) insights.push(`Demand: ${payload.demand}`);
+      if (payload.opportunity) insights.push(`Opportunity: ${payload.opportunity}`);
+      if (payload.target_market) insights.push(`Target: ${payload.target_market}`);
+      if (payload.growth_potential) insights.push(`Growth: ${payload.growth_potential}`);
+      // Fallback to any string values
+      if (insights.length === 0) {
+        for (let key in payload) {
+          if (typeof payload[key] === 'string' && payload[key].length > 0) {
+            insights.push(payload[key].slice(0, 100));
+            if (insights.length >= 2) break;
+          }
+        }
+      }
+      return insights.length ? insights.join(' • ') : 'Market analysis in progress';
+    }
+
+    // For Competitor Agent
+    if (kind === 'competitor') {
+      const insights = [];
+      if (payload.main_competitors) insights.push(`Competitors: ${payload.main_competitors}`);
+      if (payload.competition_level) insights.push(`Level: ${payload.competition_level}`);
+      if (payload.competitive_advantage) insights.push(`Advantage: ${payload.competitive_advantage}`);
+      if (payload.differentiation) insights.push(`Diff: ${payload.differentiation}`);
+      if (payload.market_gaps) insights.push(`Gaps: ${payload.market_gaps}`);
+      if (insights.length === 0) {
+        for (let key in payload) {
+          if (typeof payload[key] === 'string' && payload[key].length > 0) {
+            insights.push(payload[key].slice(0, 100));
+            if (insights.length >= 2) break;
+          }
+        }
+      }
+      return insights.length ? insights.join(' • ') : 'Competitive analysis running';
+    }
+
+    // For Risk Agent
+    if (kind === 'risk') {
+      const insights = [];
+      if (payload.revenue_potential) insights.push(`Revenue: ${payload.revenue_potential}`);
+      if (payload.main_risks) insights.push(`Risks: ${payload.main_risks}`);
+      if (payload.risk_level) insights.push(`Level: ${payload.risk_level}`);
+      if (payload.mitigation) insights.push(`Mitigation: ${payload.mitigation}`);
+      if (payload.funding_needs) insights.push(`Funding: ${payload.funding_needs}`);
+      if (insights.length === 0) {
+        for (let key in payload) {
+          if (typeof payload[key] === 'string' && payload[key].length > 0) {
+            insights.push(payload[key].slice(0, 100));
+            if (insights.length >= 2) break;
+          }
+        }
+      }
+      return insights.length ? insights.join(' • ') : 'Risk assessment underway';
+    }
+
+    // Generic fallback: extract first few string values
+    const textValues = [];
+    for (let key in payload) {
+      const value = payload[key];
+      if (typeof value === 'string' && value.trim() && value.length > 0) {
+        textValues.push(value.slice(0, 80));
+        if (textValues.length >= 2) break;
+      } else if (Array.isArray(value) && value.length > 0) {
+        const items = value.filter(v => typeof v === 'string' && v.length > 0).slice(0, 2).join(', ');
+        if (items) textValues.push(items.slice(0, 80));
       }
     }
 
-    async function loadHistory() {
-      try {
-        const res = await fetch('/api/history');
-        const data = await res.json();
+    return textValues.length ? textValues.join(' • ') : 'Analysis complete';
+  }
 
-        const renderTo = (id) => {
-          const box = document.getElementById(id);
-          if (!box) return;
-          if (!Array.isArray(data) || data.length === 0) {
-            box.innerHTML = `<div class="text-slate-400 dark:text-gray-500 text-xs">No recent analysis found.</div>`;
-            return;
-          }
-          const item = data[0];
+  function typeText(element, text, speed = 22) {
+    let index = 0;
+    element.innerHTML = '';
+    const timer = setInterval(() => {
+      element.innerHTML += text[index] || '';
+      index += 1;
+      if (index >= text.length) clearInterval(timer);
+    }, speed);
+  }
+
+  function renderAgentResults(data) {
+    const workingStatus = document.getElementById('agentWorkingStatus');
+    const analysisDisplay = document.getElementById('agentsAnalysisDisplay');
+    if (!workingStatus || !analysisDisplay) return;
+
+    // Show working status, hide analysis
+    workingStatus.classList.remove('hidden');
+    analysisDisplay.classList.add('hidden');
+
+    const judge = data.judge_evaluation || {};
+
+    // Simulate agent working with delays
+    setTimeout(() => {
+      // Populate all analysis data
+      const innovation = Number(judge.innovation_score ?? 0);
+      const market = Number(judge.market_score ?? 0);
+      const business = Number(judge.business_score ?? 0);
+      const technology = Number(judge.technology_score ?? 0);
+      const investment = Number(judge.investor_readiness_score ?? 0);
+      const risk = Number(judge.risk_score ?? 0);
+
+      // Update scores
+      document.getElementById('agentScoreBox').innerText = judge.overall_score ?? '--';
+      document.getElementById('agentReadinessBox').innerText = judge.investor_readiness_score ?? '--';
+      document.getElementById('agentDecisionBox').innerText = judge.decision || '--';
+
+      // Update metric boxes
+      document.getElementById('agentInnovationScore').innerText = innovation ? innovation + '%' : '--';
+      document.getElementById('agentMarketScore').innerText = market ? market + '%' : '--';
+      document.getElementById('agentBusinessScore').innerText = business ? business + '%' : '--';
+      document.getElementById('agentTechnologyScore').innerText = technology ? technology + '%' : '--';
+      document.getElementById('agentInvestmentScore').innerText = investment ? investment + '%' : '--';
+      document.getElementById('agentRiskScore').innerText = risk ? (risk >= 70 ? 'High' : risk >= 40 ? 'Medium' : 'Low') : '--';
+
+      // Update progress bars
+      document.getElementById('agentInnovationBar').style.width = innovation + '%';
+      document.getElementById('agentMarketBar').style.width = market + '%';
+      document.getElementById('agentBusinessBar').style.width = business + '%';
+      document.getElementById('agentTechnologyBar').style.width = technology + '%';
+      document.getElementById('agentInvestmentBar').style.width = investment + '%';
+      document.getElementById('agentRiskBar').style.width = risk + '%';
+
+      // Update SWOT
+      const swot = judge.swot || {};
+      document.getElementById('agentStrengths').innerHTML = (swot.strengths || []).map(s => `<li class="pl-3 border-l-2 border-emerald-500">${escapeHtml(s)}</li>`).join('');
+      document.getElementById('agentWeaknesses').innerHTML = (swot.weaknesses || []).map(s => `<li class="pl-3 border-l-2 border-red-500">${escapeHtml(s)}</li>`).join('');
+      document.getElementById('agentOpportunities').innerHTML = (swot.opportunities || []).map(s => `<li class="pl-3 border-l-2 border-blue-500">${escapeHtml(s)}</li>`).join('');
+      document.getElementById('agentThreats').innerHTML = (swot.threats || []).map(s => `<li class="pl-3 border-l-2 border-yellow-500">${escapeHtml(s)}</li>`).join('');
+
+      // Update elevator pitch
+      document.getElementById('agentElevatorPitch').innerText = judge.elevator_pitch || 'Analysis complete';
+
+      // Hide working status, show analysis
+      workingStatus.classList.add('hidden');
+      analysisDisplay.classList.remove('hidden');
+    }, 2500); // Simulate agent working time
+  }
+
+  function fillExample() {
+    document.getElementById('ideaInput').value = 'An AI platform that helps college students create personalized study plans, track progress, and reduce exam stress.';
+  }
+
+  function riskLabel(value) {
+    if (value >= 70) return 'High';
+    if (value >= 40) return 'Medium';
+    return 'Low';
+  }
+
+  async function analyzeIdea() {
+    const idea = document.getElementById('ideaInput').value.trim();
+    if (!idea) return alert("Please enter your startup idea");
+
+    const resultDiv = document.getElementById('resultArea');
+    resultDiv.innerHTML = `<div class="text-center py-14 text-slate-500 dark:text-gray-400"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-500 dark:text-emerald-400"></i><p class="mt-4 text-sm">AI is analyzing your idea...</p></div>`;
+
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idea })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        resultDiv.innerHTML = `<p class="text-red-500 text-center py-8 text-sm">${data.error || 'Something went wrong.'}</p>`;
+        return;
+      }
+
+      const judge = data.judge_evaluation || {};
+      const innovation = Number(judge.innovation_score ?? 0);
+      const market = Number(judge.market_score ?? 0);
+      const business = Number(judge.business_score ?? 0);
+      const technology = Number(judge.technology_score ?? 0);
+      const investment = Number(judge.investor_readiness_score ?? 0);
+      const risk = Number(judge.risk_score ?? 0);
+
+      document.getElementById('scoreBox').innerText = judge.overall_score ?? '--';
+      document.getElementById('readinessBox').innerText = judge.investor_readiness_score ?? '--';
+      document.getElementById('decisionBox').innerText = judge.decision || '--';
+
+      resultDiv.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex flex-col md:flex-row justify-between gap-4">
+            <div class="max-w-3xl">
+              <span class="px-3 py-1 bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 rounded-full text-xs font-semibold inline-block">
+                ${judge.decision || 'Analysis'}
+              </span>
+              <h3 class="text-xl md:text-2xl font-bold mt-3 leading-tight text-slate-900 dark:text-white">
+                ${judge.elevator_pitch || "Strategic venture design analysis"}
+              </h3>
+            </div>
+            <div class="min-w-[120px] text-right">
+              <div class="text-4xl font-bold text-emerald-500 dark:text-emerald-400">${judge.overall_score ?? 0}</div>
+              <p class="text-slate-500 dark:text-gray-400 mt-1 text-xs">Overall Score</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4">
+              <h4 class="text-emerald-600 dark:text-emerald-400 font-semibold mb-2 text-sm">Strengths</h4>
+              <ul class="space-y-1 text-xs text-slate-700 dark:text-gray-200">
+                ${(judge.swot?.strengths || []).map(s => `<li class="pl-3 border-l-2 border-emerald-500">${s}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4">
+              <h4 class="text-red-600 dark:text-red-400 font-semibold mb-2 text-sm">Weaknesses</h4>
+              <ul class="space-y-1 text-xs text-slate-700 dark:text-gray-200">
+                ${(judge.swot?.weaknesses || []).map(s => `<li class="pl-3 border-l-2 border-red-500">${s}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4">
+              <h4 class="text-blue-600 dark:text-blue-400 font-semibold mb-2 text-sm">Opportunities</h4>
+              <ul class="space-y-1 text-xs text-slate-700 dark:text-gray-200">
+                ${(judge.swot?.opportunities || []).map(s => `<li class="pl-3 border-l-2 border-blue-500">${s}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-4">
+              <h4 class="text-yellow-600 dark:text-yellow-400 font-semibold mb-2 text-sm">Threats</h4>
+              <ul class="space-y-1 text-xs text-slate-700 dark:text-gray-200">
+                ${(judge.swot?.threats || []).map(s => `<li class="pl-3 border-l-2 border-yellow-500">${s}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+
+      renderAgentResults(data);
+      loadHistory();
+      showPanel('agentsPanel');
+    } catch (err) {
+      resultDiv.innerHTML = `<p class="text-red-500 text-center py-8 text-sm">Something went wrong. Please try again.</p>`;
+    }
+  }
+
+  async function loadHistory() {
+    try {
+      const res = await fetch('/api/history');
+      const data = await res.json();
+
+      const renderTo = (id, limit = 3) => {
+        const box = document.getElementById(id);
+        if (!box) return;
+        if (!Array.isArray(data) || data.length === 0) {
+          box.innerHTML = `<div class="text-slate-400 dark:text-gray-500 text-xs">No recent analysis found.</div>`;
+          return;
+        }
+
+        const items = data.slice(0, limit);
+        box.innerHTML = items.map(item => {
           const evalData = item.judge_evaluation || {};
-          box.innerHTML = `
+          const ideaText = (item.idea || '').slice(0, 90);
+          const agentBadges = [
+            item.market_research ? 'Market' : null,
+            item.competitor_analysis ? 'Competitors' : null,
+            item.risk_revenue ? 'Risk' : null,
+            item.judge_evaluation ? 'Judge' : null
+          ].filter(Boolean);
+
+          return `
             <div class="p-3 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
               <div class="flex items-center justify-between gap-3">
-                <div class="font-medium text-slate-900 dark:text-white truncate text-xs">${evalData.decision || 'Analysis'}</div>
-                <div class="text-emerald-500 dark:text-emerald-400 font-bold text-xs">${evalData.overall_score ?? '--'}</div>
+                <div class="font-medium text-slate-900 dark:text-white truncate text-xs">${escapeHtml(evalData.decision || 'Analysis')}</div>
+                <div class="text-emerald-500 dark:text-emerald-400 font-bold text-xs">${escapeHtml(evalData.overall_score ?? '--')}</div>
               </div>
               <p class="text-slate-500 dark:text-gray-400 text-[11px] mt-1">
-                ${(item.idea || '').slice(0, 90)}${(item.idea || '').length > 90 ? '...' : ''}
+                ${escapeHtml(ideaText)}${(item.idea || '').length > 90 ? '...' : ''}
               </p>
+              <div class="mt-2 flex flex-wrap gap-1">
+                ${agentBadges.map(label => `<span class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-600 dark:text-emerald-300">${escapeHtml(label)}</span>`).join('')}
+              </div>
             </div>
           `;
-        };
+        }).join('');
+      };
 
-        renderTo('historyList');
-        renderTo('historyPanelList');
-      } catch (e) {
-        document.getElementById('historyList').innerHTML = `<div class="text-red-500 text-xs">Failed to load history.</div>`;
-        document.getElementById('historyPanelList').innerHTML = `<div class="text-red-500 text-xs">Failed to load history.</div>`;
-      }
+      renderTo('historyList', 3);
+      renderTo('historyPanelList', 8);
+    } catch (e) {
+      document.getElementById('historyList').innerHTML = `<div class="text-red-500 text-xs">Failed to load history.</div>`;
+      document.getElementById('historyPanelList').innerHTML = `<div class="text-red-500 text-xs">Failed to load history.</div>`;
     }
+  }
 
-    showPanel('dashboardPanel');
-    loadHistory();
-  </script>
+  showPanel('dashboardPanel');
+  loadHistory();
+</script>
 </body>
 </html>

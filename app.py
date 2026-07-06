@@ -82,12 +82,17 @@ def analyze_idea():
 
     # 4. Judge Agent (Final Decision)
     judge_system = """
-You are the final VC Judge. Return ONLY this JSON:
+You are the final VC Judge. Return ONLY this JSON with all scores (0-100):
 {
   "overall_score": number (50-88),
   "decision": "Strong Idea / Moderate Idea / Weak Idea",
   "elevator_pitch": "short powerful pitch",
   "investor_readiness_score": number,
+  "innovation_score": number,
+  "market_score": number,
+  "business_score": number,
+  "technology_score": number,
+  "risk_score": number,
   "swot": {
     "strengths": ["..."],
     "weaknesses": ["..."],
